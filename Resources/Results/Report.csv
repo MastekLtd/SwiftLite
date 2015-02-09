@@ -1,0 +1,4 @@
+GroupName,Iteration,TestCaseID,TransactionType,TestCaseDesription,StartDate,EndDate,Status,Description,Screenshot
+"Smoke","Cycle1","SC1_TC1","AddHtmltext","Test case flow for html watchdog for Textbox","2015/02/05 18:38:45","2015/02/05 18:39:04","PASS","",""
+"Smoke","Cycle1","SC1_TC2","AddHtmlchck","Test case flow for html watchdog for chckbox & radio","2015/02/05 18:39:04","2015/02/05 18:39:32","PASS","",""
+"Smoke","Cycle1","SC1_TC3","AddHtmlselectbox"," Test case flow for html watchdog for select box","2015/02/05 18:39:32","2015/02/05 18:39:42","PASS","",""
