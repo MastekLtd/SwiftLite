@@ -200,9 +200,9 @@ public class MainController {
 			
 			if(!userInteraction.equalsIgnoreCase("FALSE"))
 			{
-				WebDriver.frame.setUndecorated( true );
 				WebDriver.frame.setVisible( true );
-				WebDriver.frame.setLocationRelativeTo( null );
+				WebDriver.frame.setAlwaysOnTop(true);
+				WebDriver.frame.setLocationRelativeTo(null);
 
 				int response = JOptionPane.showConfirmDialog(WebDriver.frame,message,"SwiftFramework",JOptionPane.YES_NO_OPTION);
 				System.out.println(response);				
@@ -213,11 +213,7 @@ public class MainController {
 				else if(response == 1)
 				{					
 					/**Call error reporting and stop execution**/
-					ExcelUtility.writeReport(WebDriver.report);
-					System.gc();
-					WebDriver.frame.dispose();
-					Automation.driver.quit();
-					System.exit(0);
+					ExcelUtility.writeReport(WebDriver.report);								
 				}
 				else
 				{

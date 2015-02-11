@@ -47,8 +47,12 @@ public class WebDriver {
 		}
 		finally
 		{
+			frame.setVisible(true);
+			frame.setAlwaysOnTop(true);
+			frame.setLocationRelativeTo(null);
 			JOptionPane.showMessageDialog(frame, "Execution Completed");		
-			frame.dispose();		
+			frame.dispose();			
+			Automation.driver.quit();		
 		}
 	}
 

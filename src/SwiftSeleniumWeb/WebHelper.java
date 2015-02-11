@@ -1530,7 +1530,7 @@ public class WebHelper {
             SwiftSeleniumWeb.WebDriver.report.setFromDate(Automation.dtFormat.format(new Date()));		
 		
 		String fileName = SwiftSeleniumWeb.WebDriver.report.strTestcaseId + "_" + SwiftSeleniumWeb.WebDriver.report.strTrasactionType+ "_"+date;
-		String location = System.getProperty("user.dir") +"\\Resources\\Results\\ScreenShots\\"+ fileName+".png";
+		String location = System.getProperty("user.dir") +"\\Resources\\Results\\ScreenShots\\"+ fileName+".jpeg";
 		SwiftSeleniumWeb.WebDriver.report.strScreenshot = "file:\\\\"+location;
 
 		try {
