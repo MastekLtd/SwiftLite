@@ -23,3 +23,6 @@ Also, the same PDF can be used to work with complete code of Swift Lite Framewor
 Download SwiftLite distributable
 --------------------------------
 [Download SwiftLite] (https://sourceforge.net/projects/swiftlite/files/SwiftLite/)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mittaltripti/swiftlite/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
