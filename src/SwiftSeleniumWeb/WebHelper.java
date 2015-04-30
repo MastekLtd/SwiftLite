@@ -45,7 +45,10 @@ import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -297,7 +300,9 @@ public class WebHelper {
 		HSSFCell reqCell=null;
 		Object actualvalue=null;		
 		String req = "";
-		DataFormatter fmt = new DataFormatter();		
+		DataFormatter fmt = new DataFormatter();
+		
+		
 		if(inputHashTable.isEmpty()== true)
 		{
 			inputHashTable=getValueFromHashMap(reqSheet);
@@ -321,15 +326,34 @@ public class WebHelper {
 				}
 				else
 				{
-					int type = reqCell.getCellType();
+					HSSFWorkbook wb = reqCell.getSheet().getWorkbook() ;
+                    FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
+                    CellValue cellValue = evaluator.evaluate(reqCell);
+                    int type=0;
+                    if(cellValue!=null)
+                    {
+                        type= cellValue.getCellType() ;
+                    }
+                    else
+                    {
+                       type = reqCell.getCellType();
+                    }
+
 					switch(type)
 					{
 					case HSSFCell.CELL_TYPE_BLANK:
 						req = "";
 						break;
 					case HSSFCell.CELL_TYPE_NUMERIC:
-						req = fmt.formatCellValue(reqCell);								
-						break;
+						if (DateUtil.isCellDateFormatted(reqCell)) {
+					        req = fmt.formatCellValue(reqCell, evaluator);
+					    } else {
+					        req = Double.toString(reqCell.getNumericCellValue());
+					    }
+					    break;
+
+						//req = fmt.formatCellValue(reqCell);								
+						//break;
 					case HSSFCell.CELL_TYPE_STRING:
 						req = reqCell.getStringCellValue();
 						break;
@@ -338,10 +362,7 @@ public class WebHelper {
 						break;
 					case HSSFCell.CELL_TYPE_ERROR:
 						req = "error";
-						break;
-					case HSSFCell.CELL_TYPE_FORMULA:
-						req = reqCell.getCellFormula();
-						break;
+						break;			
 					}
 				}
 			}
@@ -354,7 +375,6 @@ public class WebHelper {
 		}
 		return req;
 	}
-
 	public static HashMap<String, Object> getValueFromHashMap(HSSFSheet reqSheet)
 	{
 		HashMap<String, Object> inputHashTable = new HashMap<String, Object>();
