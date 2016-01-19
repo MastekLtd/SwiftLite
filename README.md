@@ -9,18 +9,18 @@ Swift is a hybrid framework that derives benefits from the following automation 
 Quickstart
 ===========
 
-SwiftLite executable jar can be [downloaded] (https://sourceforge.net/projects/swiftlite/files/SwiftLite/) and can be executed with following updations in the files.
+SwiftLite executable jar can be [downloaded] (https://sourceforge.net/projects/swiftlite/files/1.2/) and can be executed with following updations in the files.
 
 
 Key Components
 ==============
 
-Please download [Swift-Selenium UserGuide.pdf] (https://sourceforge.net/projects/swiftlite/files/SwiftLite/) and follow Section 4.3 Key Components for further setup details
+Please download [Swift-Selenium UserGuide.pdf] (https://sourceforge.net/projects/swiftlite/files/1.2/) and follow Section 4.3 Key Components for further setup details
 
 Also, the same PDF can be used to work with complete code of Swift Lite Framework
   
    
 Download SwiftLite distributable
 --------------------------------
-[Download SwiftLite] (https://sourceforge.net/projects/swiftlite/files/SwiftLite/)
+[Download SwiftLite] (https://sourceforge.net/projects/swiftlite/files/1.2/)
 
