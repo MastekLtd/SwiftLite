@@ -2,8 +2,10 @@ SwiftLite
 =========
 
 Swift is a hybrid framework that derives benefits from the following automation framework methodologies.
+ * Support has been added for Behaviour driven development( BDD ) using Cucucmber
  * It contains rich and robust library of generic functions for data input, verification and reporting. 
  * Library functions can be called from anywhere within the framework.
+ 
 
 
 Quickstart
