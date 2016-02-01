@@ -15,7 +15,7 @@ SwiftLite executable jar can be [downloaded] (https://sourceforge.net/projects/s
 Key Components
 ==============
 
-Please download [Swift-Selenium UserGuide.pdf] (https://sourceforge.net/projects/swiftlite/files/1.2/) and follow Section 4.3 Key Components for further setup details
+Please download [Swift-Selenium UserGuide.pdf] (https://github.com/MastekLtd/SwiftLite/blob/master/Swift%20Selenium%20UserGuide.pdf) and follow Section 4.3 Key Components for further setup details
 
 Also, the same PDF can be used to work with complete code of Swift Lite Framework
   
