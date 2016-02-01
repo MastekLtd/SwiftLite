@@ -1714,46 +1714,4 @@ public class WebHelper {
 		return elementProperties;
 	}
 
-	public static void saveScreenShot(){
-		if (!(Automation.driver instanceof TakesScreenshot)) {
-
-			System.out.println("Not able to take screenshot: Current WebDriver does not support TakesScreenshot interface.");
-			return;
-		}
-
-		File scrFile;
-		try {
-
-			scrFile = ((TakesScreenshot)Automation.driver).getScreenshotAs(OutputType.FILE);
-		} 
-		catch (Exception e){
-			System.out.println("Taking screenshot failed for: " +TransactionMapping.report.strTestcaseId);
-			// e.printStackTrace();
-			return;
-		}
-		String date = null;
-		
-		
-		if(StringUtils.isNotBlank(TransactionMapping.report.frmDate))
-            date = TransactionMapping.report.frmDate.replaceAll("[-/: ]","");
-		else
-			TransactionMapping.report.setFromDate(Automation.dtFormat.format(new Date()));		
-		
-		String fileName = TransactionMapping.report.strTestcaseId + "_" + TransactionMapping.report.strTrasactionType+ "_"+date;
-		//TM:19/01/2015 - Changes made to save screenshots in jpeg format rather that png since they are heavier
-		String location = System.getProperty("user.dir") +"\\Resources\\Results\\ScreenShots\\"+ fileName+".jpeg";
-		TransactionMapping.report.strScreenshot = "file:\\\\"+location;
-
-		try {
-
-			FileUtils.copyFile(scrFile, new File(location));
-
-		} 
-		catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-
-	}
-
 }

@@ -20,6 +20,9 @@ package swift.runner;
 
 import java.io.IOException;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import swift.selenium.Automation;
 import swift.selenium.WebDriver;
 
@@ -33,7 +36,18 @@ public class MasterRunner {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		String bddSupport = "false";
-		Automation.LoadConfigData(args[0]);
+		
+		if (args.length == 0){
+			
+			JFrame frame = new JFrame("Swift Framework");			
+			JOptionPane.showMessageDialog(frame, 
+					"Please specify the Config File path in 'Arguments' tab from Menu Run=>Run Configuration > Click MasterRunner. For more info, "
+					+ "please refer to User Guide 'Framework Installation' Section");
+			System.exit(0);
+		}
+		else{
+			Automation.LoadConfigData(args[0]);
+		}
 		
 		
 		if (Automation.configHashMap.containsKey("BDD_SUPPORT")){
