@@ -37,12 +37,36 @@ public class JDBCConnection {
 		return rs;
 	}
 
+	public static ResultSet establishDBConn_orig(String filePath,String Query) throws SQLException, ClassNotFoundException
+	{
+		String Url = "jdbc:sqlserver://localhost;database=AUTOMATION;user=sa;Password=Mastek12";
+		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        System.out.println("Trying to connect");
+        c = DriverManager.getConnection(Url);
+
+		//DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());//oracle.jdbc.driver.OracleDriver()
+		//Class.forName("com.mysql.jdbc.Driver");
+		//c = DriverManager.getConnection("jdbc:oracle:thin:@192.xx.xxx.xxx:1521:dbinstance", "new_release", "RELEASEDUJUE");
+
+		st = c.createStatement();
+		rs = st.executeQuery(Query);
+		return rs;
+	}
+	
 	public static ResultSet establishDBConn(String filePath,String Query) throws SQLException, ClassNotFoundException
 	{
-
-		DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());//oracle.jdbc.driver.OracleDriver()
-		//Class.forName("com.mysql.jdbc.Driver");
-		c = DriverManager.getConnection("jdbc:oracle:thin:@192.xx.xxx.xxx:1521:dbinstance", "new_release", "RELEASEDUJUE");
+		//String Url =  "jdbc:sqlserver://mastek-sdt-integration.database.windows.net:1433;"
+				String Url =  "jdbc:sqlserver://sdtdev.database.windows.net:1433;"
+                + "database=SDTSTAGING;"
+                + "user=sdtadmin;"
+                + "password=Goldfish03;"
+                + "encrypt=true;"
+                + "trustServerCertificate=false;"
+                + "hostNameInCertificate=*.database.windows.net;"
+                + "loginTimeout=30;";
+		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        
+        c = DriverManager.getConnection(Url);
 
 		st = c.createStatement();
 		rs = st.executeQuery(Query);
@@ -60,4 +84,18 @@ public class JDBCConnection {
 		return rowCount;
 
 	}
+	
+	public static String getFirstColumnName(String strQuery) throws SQLException, ClassNotFoundException
+	{
+		 ResultSet rs =JDBCConnection.establishDBConn("", strQuery);
+         rs.next(); 
+         ResultSetMetaData rsmd = rs.getMetaData();
+         String strFirstColumnName = String.valueOf(rs.getObject(rsmd.getColumnName(1)));
+         rs.close();
+         return strFirstColumnName;
+
+	}
+	
+	
+	
 }

@@ -39,15 +39,14 @@ import cucumber.api.junit.Cucumber;
 		"html:target/cucumber",
 		"json:target_json/cucumber.json",
 		"junit:taget_junit/cucumber.xml"
-		},features = {"Projects/HTML_DOG/Feature/test.feature"},glue={"swift.cucumber"}, tags="@SmokeTest")
+		})
 
 public class CucumberRunner {
 	public static JFrame frame;
 	
 	@BeforeClass
 	public static void setUp() throws Exception{
-		try {
-			//Automation.LoadConfigData();
+		try {			
 			Automation.setUp();
 
 		} catch (Exception e) {

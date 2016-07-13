@@ -18,11 +18,18 @@
 
 package swift.selenium;
 
+import io.appium.java_client.AppiumDriver;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,6 +40,7 @@ import java.io.PrintStream;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -40,7 +48,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
+import javax.imageio.ImageIO;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
@@ -56,7 +65,6 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -70,8 +78,13 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.sikuli.script.Screen;
+import io.appium.java_client.MobileDriver;
+import org.openqa.selenium.internal.Locatable;
+import io.appium.java_client.DeviceActionShortcuts;
 
-import swift.selenium.Automation.browserTypeEnum;
+import specialcontrols.highcharts.BarChart;
+import specialcontrols.highcharts.BasicLineChart;
+import specialcontrols.highcharts.DonutChart;
 
 public class WebHelper {
 
@@ -90,10 +103,10 @@ public class WebHelper {
 	public static String wsdl_url, request_url, request_xml, response_fileName, response_url;
 
 	public static enum ControlTypeEnum
-	{I,NC,V,VA,O,T,F,WebEdit,AjaxWebList,WebElement,Date,SikuliType,SikuliButton,ListBox,Radio,WebButton,WebLink,CheckBox,WebTable,Browser,Menu,Wait,WebImage,URL,BrowserAuth,BrowserType,WebList,Alert,Window,Robot,January, February, March, April, May, June, July, August, September, October, November, December,
-	ActionClick,ActionDoubleClick,ActionClickandEsc,ActionMouseOver,Read,Write,WaitForJS,CloseWindow,DB,FileUpload,JSScript,Calendar,CalendarNew,CalendarIPF,CalendarEBP,WaitForEC,IFrame,ScrollTo,WebService,JSONResp};
+	{I,NC,V,VA,O,T,F,WebEdit,AjaxWebList,WebElement,Date,SikuliType,SikuliButton,ListBox,Radio,WebButton,WebLink,CheckBox,WebTable,Browser,Menu,Wait,WebImage,URL,BrowserAuth,BrowserType,BrowserControl,WebList,Alert,Window,Robot,January, February, March, April, May, June, July, August, September, October, November, December,
+	ActionClick,ActionDoubleClick,ActionClickandEsc,ActionMouseOver,Read,Write,WaitForJS,CloseWindow,DB,DBV,CP,FileUpload,JSScript,Calendar,CalendarNew,CalendarIPF,CalendarEBP,WaitForEC,IFrame,ScrollTo,WebService,JSONResp,CaptureScreen, DonutChart, GV, LV, BarChart, GB, WebService_REST, Get, Post, BasicLineChart, SwitchContext, SwipeDown};
 	
-	public static enum ControlIdEnum {Id,HTMLID,Name,XPath,ClassName,TagName,LinkText,TagText,TagValue,TagOuterText,LinkValue,CSSSelector,Id_p,HTMLID_p,XPath_p,AjaxPath};
+	public static enum ControlIdEnum {Id,HTMLID,Name,XPath,ClassName,TagName,LinkText,TagText,TagValue,TagOuterText,LinkValue,CSSSelector,Id_p,HTMLID_p,XPath_p,AjaxPath, XPathValue};
 
 	public static String control;
 	public static Date toDate=null;
@@ -106,6 +119,8 @@ public class WebHelper {
 	public static String columnName;
 	public static Boolean pageLoaded = false;
 	public static Boolean isDynamicNumFound=false;
+	private static String ErrorMsg;
+	private static String VerificationScreen;
 
 	public static void GetCellInfo(String FilePath,HSSFRow rowValues,int valuesRowIndex,int valuesRowCount) throws IOException // newly Added two Variables for Action Loop
 	{
@@ -230,7 +245,10 @@ public class WebHelper {
 										&& !controltype.equalsIgnoreCase("Calendar")&&!controltype.equalsIgnoreCase("CalendarNew")&&!controltype.equalsIgnoreCase("CalendarIPF")&&!controltype.equalsIgnoreCase("CalendarEBP")&&										
 										(!action.equalsIgnoreCase("Read")||((action.equalsIgnoreCase("Read")&& !controlName.isEmpty())))&&
 										!controltype.equalsIgnoreCase("JSScript")&&!controltype.equalsIgnoreCase("DB")&& !controlID.equalsIgnoreCase("XML")&& !controltype.startsWith("Process")
-										&& !controltype.startsWith("Destroy")&& !controltype.startsWith("ReadSikuli") &&!controltype.equalsIgnoreCase("WebService") &&!controltype.equalsIgnoreCase("JSONResp") && !action.equalsIgnoreCase("VA"))
+										&& !controltype.startsWith("Destroy")&& !controltype.startsWith("ReadSikuli") &&!controltype.equalsIgnoreCase("WebService") &&!controltype.equalsIgnoreCase("WebService_REST") &&!controltype.equalsIgnoreCase("JSONResp") && !action.equalsIgnoreCase("VA")
+										&& !action.equalsIgnoreCase("VA") && !controltype.equalsIgnoreCase("CaptureScreen") 
+										&& !controltype.equalsIgnoreCase("CloseWindow") &&!controlID.equalsIgnoreCase("DonutChart") 
+										&&!controlID.equalsIgnoreCase("BarChart")&& !action.equalsIgnoreCase("GB")  && !controltype.equalsIgnoreCase("SwitchContext")&&!controltype.equalsIgnoreCase("SwipeDown"))
 								{
 									if((indexVal.equalsIgnoreCase("")||indexVal.equalsIgnoreCase("0"))&& !controlID.equalsIgnoreCase("TagValue")&&!controlID.equalsIgnoreCase("TagText"))
 									{
@@ -330,7 +348,8 @@ public class WebHelper {
 		}
 		HSSFRow rowActual = reqSheet.getRow(rowIndex);
 		if(inputHashTable.get(reqValue)== null)
-		{		
+		{	
+			
 			TransactionMapping.report.setStrMessage("Column "+ reqValue +" not Found. Please Check input Sheet");
 			TransactionMapping.pauseFun("Column "+ reqValue +" not Found. Please Check input Sheet");				
 		}
@@ -419,7 +438,7 @@ public class WebHelper {
  * @return
  * @throws IOException
  */
-	public static Reporter WriteToDetailResults(String expectedValue,String actualValue,String columnName) throws IOException
+	public static Reporter WriteToDetailResults(String expectedValue,String actualValue,String reportColumnName) throws IOException
 	{
 		Reporter report = new Reporter();
 		report.setReport(report);
@@ -440,6 +459,15 @@ public class WebHelper {
 			passCount = "1";
 			failCount="0";
 		}
+		else if((expectedValue.startsWith("*") || expectedValue.endsWith("*")) && (actualValue.matches("(.*)"+expectedValue+"(.*)")))
+		{							
+				report.strActualValue = actualValue;
+				report.strExpectedValue = expectedValue;
+				report.strStatus = "PASS";
+				report.toDate = Automation.dtFormat.format(frmDate);
+				passCount = "1";
+				failCount="0";
+		}
 		else
 		{
 			report.strActualValue = "FAIL|"+actualValue +"|"+expectedValue;
@@ -448,6 +476,11 @@ public class WebHelper {
 			report.toDate = Automation.dtFormat.format(frmDate);
 			failCount = "1";
 			passCount = "0";
+				//KV:29-07-2015 Added screenshot for verification failure
+				//SS:21-10-2015 Handled Null condition for non-browser based operation such as Web service.
+				if(Automation.driver != null){
+					saveScreenShot(report, reportColumnName);
+				}
 			//DS:30-05-2014
 			fieldVerFailCount += 1;
 		}
@@ -470,7 +503,7 @@ public class WebHelper {
 				ExcelUtility.myChar+","+ExcelUtility.myChar+
 				report.strTrasactionType+ExcelUtility.myChar+","
 				+ExcelUtility.myChar+report.toDate+ExcelUtility.myChar+","+
-				ExcelUtility.myChar+"Field: "+columnName+ExcelUtility.myChar+","+
+				ExcelUtility.myChar+"Field: "+reportColumnName+ExcelUtility.myChar+","+
 				ExcelUtility.myChar+report.strStatus+ExcelUtility.myChar+","+
 				ExcelUtility.myChar+passCount+ExcelUtility.myChar+","+
 				ExcelUtility.myChar+failCount+ExcelUtility.myChar+","+
@@ -528,6 +561,14 @@ public class WebHelper {
 			case XPath:
 				controlList = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(controlName)));
 				break;
+				
+			case XPathValue:
+                controlName = StringUtils.replace(controlName,"$Value$", controlValue );
+                System.out.println(controlName);
+                controlList = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(controlName)));
+                System.out.println("XpathValue = " + controlList.getText());
+                break;
+	
 				
 			case Name:
 				controlList = wait.until(ExpectedConditions.elementToBeClickable(By.name(controlName)));	
@@ -705,6 +746,7 @@ public class WebHelper {
 		String currentValue =null;
 		//HSSFSheet uniqueNumberSheet =null;
 		String uniqueNumber = "";
+		WebVerification.isFromVerification =false;
 		//HashMap<String ,Object> uniqueValuesHashMap = null;
 		//HSSFRow uniqueRow = null;
 		ControlTypeEnum controlTypeEnum = ControlTypeEnum.valueOf(controlType);
@@ -715,7 +757,14 @@ public class WebHelper {
 			isIntialized = true;
 		}
 
-		if(action.toString().equalsIgnoreCase("I") && !ctrlValue.equalsIgnoreCase("")||action.toString().equalsIgnoreCase("Read")||action.toString().equalsIgnoreCase("Write") || action.toString().equalsIgnoreCase("V") && !ctrlValue.equalsIgnoreCase("") || action.toString().equalsIgnoreCase("NC") || action.toString().equalsIgnoreCase("T") && !ctrlValue.equalsIgnoreCase("")|| action.toString().equalsIgnoreCase("F") && !ctrlValue.equalsIgnoreCase("") || action.toString().equalsIgnoreCase("VA") && !ctrlValue.equalsIgnoreCase("") || action.toString().equalsIgnoreCase("O") )			
+		if(action.toString().equalsIgnoreCase("I") && !ctrlValue.equalsIgnoreCase("")||action.toString().equalsIgnoreCase("Read")
+				||action.toString().equalsIgnoreCase("Write") || action.toString().equalsIgnoreCase("V") && !ctrlValue.equalsIgnoreCase("") 
+				|| action.toString().equalsIgnoreCase("NC") || action.toString().equalsIgnoreCase("T") && !ctrlValue.equalsIgnoreCase("")
+				|| action.toString().equalsIgnoreCase("F") && !ctrlValue.equalsIgnoreCase("") 
+				|| action.toString().equalsIgnoreCase("VA") && !ctrlValue.equalsIgnoreCase("") || action.toString().equalsIgnoreCase("O") 
+				||action.toString().equalsIgnoreCase("CP")||action.toString().equalsIgnoreCase("GV")
+				|| action.toString().equalsIgnoreCase("LV") || action.toString().equalsIgnoreCase("GB")				 
+				|| action.toString().equalsIgnoreCase("Get") || action.toString().equalsIgnoreCase("Post"))			
 		{
 			try
 			{
@@ -737,7 +786,19 @@ public class WebHelper {
 						if(!ctrlValue.equalsIgnoreCase("null"))
 						{
 							webElement.clear();							
+							webElement.sendKeys(ctrlValue);							
+						}
+						else
+						{
+							webElement.clear();
+						}
+						break;
+					case T :
+						if(!ctrlValue.equalsIgnoreCase("null"))
+						{
+							webElement.clear();							
 							webElement.sendKeys(ctrlValue);
+							((DeviceActionShortcuts) Automation.driver).hideKeyboard();
 						}
 						else
 						{
@@ -775,7 +836,13 @@ public class WebHelper {
 
 				case WebElement:
 					switch(actionName)
-					{	
+					{
+					
+					case I:
+						webElement =wait.until(ExpectedConditions.elementToBeClickable(webElement));
+						webElement.click();
+						break;
+						
 					case Read:
 						uniqueNumber = ReadFromExcel(ctrlValue);
 						webElement.clear();
@@ -785,19 +852,33 @@ public class WebHelper {
 						writeToExcel(ctrlValue, webElement, controlId, controlType, controlName, rowNo, colNo);
 						break;
 					case V:
-						
+						if(WebVerification.isFromVerification == true)
+						{
+							currentValue = webElement.getText();							
+							break;
+						}
 						boolean textPresent = false;
-						textPresent = webElement.getText().contains(ctrlValue);						
+						String ObservedText = webElement.getText();
+						if (StringUtils.isBlank(ObservedText)){
+							ObservedText= webElement.getAttribute("value");
+						}
+						
+						textPresent = ObservedText.contains(ctrlValue);						
 						if(textPresent == false)
 							currentValue = Boolean.toString(textPresent);
 						else
 							currentValue = ctrlValue;
 						break;
+						
+					case T:											
+						Point p = ((Locatable) webElement).getCoordinates().onPage();
+						((MobileDriver) Automation.driver).tap(1,p.getX(),p.getY(),1);		
+						break;	
 					}
 					break;
 					
 				case JSScript:
-					((JavascriptExecutor)Automation.driver).executeScript(controlName, ctrlValue);
+					 ((JavascriptExecutor)Automation.driver).executeScript(controlName, ctrlValue);
 					break;
 
 				case Wait:
@@ -853,7 +934,7 @@ public class WebHelper {
 					break;	
 
 				case WebLink:
-				case CloseWindow://added this Case to bypass page loading after clicking the event
+				//case CloseWindow://added this Case to bypass page loading after clicking the event
 					switch(actionName)
 					{
 					case Read:
@@ -884,6 +965,30 @@ public class WebHelper {
 					}
 					break;	
 
+				case CloseWindow: //TM-09/09/2015: This case is written to help in closing any specific windows
+					switch(actionName)
+					{
+					case I:	//This case helps in closing a specific window on the basis on the given title				
+						Set<String> handlers = null;
+						handlers = Automation.driver.getWindowHandles();
+						for(String handler : handlers)
+						{
+							Automation.driver =Automation.driver.switchTo().window(handler);
+							
+							//TM-19/01/2015: Changed following comparison from equalsIgnoreCase to contains
+							if (Automation.driver.getTitle().contains(ctrlValue))
+							{
+								System.out.println("Closing required window :-"+ Automation.driver.getTitle());
+								Automation.driver.close();
+								break;
+							}
+						}		
+						break;
+					case NC://This case helps in closing the window with current focus
+						Automation.driver.close();
+						break;
+					}
+					break;	
 				case WaitForJS:
 					waitForCondition();
 					break;
@@ -977,6 +1082,33 @@ public class WebHelper {
 					}					
 					break;	
 				
+				case BrowserControl:                    
+                    Set<String> winHandles = Automation.driver.getWindowHandles();
+                    boolean controlfound = false;
+                    winHandles = Automation.driver.getWindowHandles();
+                    for(String handler : winHandles)
+                    {
+                           Automation.driver = Automation.driver.switchTo()
+                                         .window(handler);
+
+                           try {
+                                  Automation.driver
+                                                .findElement(By.xpath(controlName));
+                                  System.out.println("Focus on window with Control: "
+                                                + controlName);
+                                  controlfound = true;
+                                  break;
+
+                           } catch (Exception e) {
+                                  // TODO: handle exception
+                           }
+                    }
+                    
+                    if(!controlfound)
+                           System.out.println("Unable to find control with : " + controlName);
+                    break;
+	
+					
 				case BrowserType:
 					switch(actionName)
 					{	
@@ -1062,9 +1194,10 @@ public class WebHelper {
 					switch(actionName)
 					{
 					case V:
-						Alert alert =Automation.driver.switchTo().alert();					
+						Alert alert =wait.until(ExpectedConditions.alertIsPresent());					
 						if(alert!=null)
 						{
+							Automation.driver.switchTo().alert();
 							currentValue = alert.getText();
 							System.out.println(currentValue);
 							alert.accept();
@@ -1256,7 +1389,7 @@ public class WebHelper {
 
 				case CalendarEBP:
 					String[] dtMthYrEBP = ctrlValue.split("/");	
-					Thread.sleep(2000);
+					Thread.sleep(500);
 					String yearEBP = dtMthYrEBP[2];					
 					String monthNumEBP=	 CalendarSnippet.getMonthForInt(Integer.parseInt(dtMthYrEBP[1])).substring(0, 3);
 					String dayEBP = dtMthYrEBP[0];
@@ -1268,15 +1401,17 @@ public class WebHelper {
 					wait.until(ExpectedConditions.elementToBeClickable(By.xpath(pathToVisibleCalendar+"/div[@class='ajax__calendar_header']/div[3]/div"))).click();
 					//check if 'Dec' is visibly clickable after refreshing
 					wait.until(ExpectedConditions.elementToBeClickable(By.xpath(pathToVisibleCalendar+"/div/div/table/tbody/tr/td/div[contains(text(), 'Dec')]")));
+					Thread.sleep(5000);
 					//following is to click the title once again to reach the year page
-					Automation.driver.findElement(By.xpath(pathToVisibleCalendar+"/div[@class='ajax__calendar_header']/div[3]/div")).click();
-					
+					wait.until(ExpectedConditions.elementToBeClickable((By.xpath(pathToVisibleCalendar+"/div[@class='ajax__calendar_header']/div[3]/div")))).click();
 					//common path used for most of the elements while selection of year, month and date
 					pathToVisibleCalendar="//div[@class='ajax__calendar'][contains(@style, 'visibility: visible;')]/div/div/div/table/tbody/tr/td";
-					
+					Thread.sleep(2000);
 					//each of the following line selects the year, month and date
 					wait.until(ExpectedConditions.elementToBeClickable(By.xpath(pathToVisibleCalendar+"/div[contains(text(),"+ yearEBP +")]"))).click();
+					Thread.sleep(2000);
 					wait.until(ExpectedConditions.elementToBeClickable(By.xpath(pathToVisibleCalendar+"/div[@class='ajax__calendar_month'][contains(text(),'"+ monthNumEBP +"')]"))).click();
+					Thread.sleep(2000);
 					wait.until(ExpectedConditions.elementToBeClickable(By.xpath(pathToVisibleCalendar+"/div[@class='ajax__calendar_day'][contains(text(),"+ dayEBP +")]"))).click();
 					
 					break;					
@@ -1357,8 +1492,12 @@ public class WebHelper {
 							Thread.sleep(2000);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
-						}
-						break;
+							}
+							break;
+							
+					case GB:
+						WebVerification.GroupBy = ctrlValue;
+						break;	
 					}
 					break;
 
@@ -1404,14 +1543,41 @@ public class WebHelper {
 					{
 					case Write:
 						ResultSet rs =JDBCConnection.establishDBConn("", ctrlValue);
-						rs.next(); 
+						rs.next();
 						ctrlValue = String.valueOf(rs.getLong("COL_1"));
 						rs.close();
 						writeToExcel(ctrlValue, webElement, controlId, controlType, controlName, rowNo, colNo);
 						break;
 					}
 					break;
-
+					//Kinjal 9/6/2015 Added for DB Approach	
+				case DBV:
+					switch(actionName)
+					{
+						case CP:
+							currentValue = webElement.getText();
+							if (StringUtils.isBlank(currentValue )){  
+								currentValue= webElement.getAttribute("value");
+							}									              
+			                ctrlValue = JDBCConnection.getFirstColumnName(ctrlValue);
+			                System.out.println("Database value fetched from DB is "+ ctrlValue);
+			                break;					
+						
+						case V:
+							
+							List<WebElement> rowElements = WebHelper.getElementsByType( controlId,  controlName,  "","","");
+							if (rowElements!=null){
+								currentValue = Integer.toString(rowElements.size());	
+							}
+							else{
+								currentValue="0";
+							}
+													              
+			                ctrlValue = JDBCConnection.getFirstColumnName( ctrlValue);			                
+			                break;
+					}
+					break;
+						
 				case WaitForEC:
 					wait.until(CommonExpectedConditions.elementToBeClickable(webElement));
 					break;
@@ -1445,8 +1611,157 @@ public class WebHelper {
 					System.out.println("X,Y co-ordinates of textbox is:- " + p);//TM:04/03/2015-New correct code
 					JavascriptExecutor js = (JavascriptExecutor) Automation.driver;  //TM:04/03/2015-New correct code
 					js.executeScript("window.scrollTo(" + p.getX() + "," + (p.getY()+150) + ");");						
-					break;		
+					break;
 					
+				case SwitchContext:
+					 Thread.sleep(3000);
+                    Set<String> contexts = ((AppiumDriver) Automation.driver).getContextHandles();
+                    for(String s:contexts)
+                    {              
+                        System.out.println("Count of contexts : "+ contexts.size() );
+                        System.out.println("Context Name : "+s);
+                        if(s.contains(ctrlValue))
+                        {
+                                        System.out.println("Mobile Web View found");
+                                        ((AppiumDriver) Automation.driver).context(s);
+                                        break;
+                        }                              
+                    }
+                    Thread.sleep(2000);
+
+					break;
+				case SwipeDown:
+					//((AppiumDriver)(Automation.driver)).swipe(0, 0, 0, 1500, 2000);
+					((AppiumDriver)(Automation.driver)).scrollTo(ctrlValue);
+					break;
+					
+				case CaptureScreen:
+					Date toDate = new Date();
+					TransactionMapping.report.setFromDate(Automation.dtFormat.format(frmDate));
+					TransactionMapping.report.setStrIteration(Automation.configHashMap.get("CYCLENUMBER").toString());
+					TransactionMapping.report.setStrTestcaseId(MainController.controllerTestCaseID.toString());
+					TransactionMapping.report.setStrGroupName(MainController.controllerGroupName.toString());
+					TransactionMapping.report.setStrTrasactionType(MainController.controllerTransactionType.toString());
+					TransactionMapping.report.setStrTestDescription(MainController.testDesciption);
+					TransactionMapping.report.setStrMessage("Screenshot of Test Case Id:"+MainController.controllerTestCaseID.toString() + " & Transaction Type:" + MainController.controllerTransactionType.toString());
+					TransactionMapping.report.setToDate(Automation.dtFormat.format(toDate));
+					saveScreenShot(TransactionMapping.report, logicalName );
+					break;
+				case WebService:
+					switch (actionName) {
+					case I:
+						if(logicalName.equalsIgnoreCase("WSDL_URL"))
+							wsdl_url = ctrlValue;
+						else if (logicalName.equalsIgnoreCase("REQUEST_URL"))
+							request_url = ctrlValue;
+						else if (logicalName.equalsIgnoreCase("REQUEST_XML"))
+							request_xml = ctrlValue;
+						break;
+
+					case T:
+						WebService.callWebService();
+						break;
+
+					case V:
+						currentValue = WebService.getXMLTagValue(controlName);
+						break;
+					}	
+					break;
+					
+				case WebService_REST:
+					switch (actionName) {
+					case I:
+						if (logicalName.equalsIgnoreCase("REQUEST_URL"))
+							request_url = ctrlValue;
+						else if (logicalName.equalsIgnoreCase("REQUEST_XML")){
+							request_xml = ctrlValue;
+						}							
+						break;
+					case Get:
+						WebService.callRESTWebService("Get", controlId);						
+						break;
+
+					case Post:
+						WebService.callRESTWebService("Post",controlId);
+						break;
+
+					case V:
+						if (controlId.equalsIgnoreCase("JSON")){
+							currentValue = WebService.getJSONTagValue(controlName);
+						}
+						else{
+							currentValue = WebService.getXMLTagValue(controlName);
+						}
+						break;
+					}	
+					break;	
+					
+				case JSONResp:
+					switch(actionName){
+					case I:
+						if(logicalName.equalsIgnoreCase("JSON_URL")){
+							response_url = controlName;
+							response_fileName = ctrlValue;
+							WebService.downloadAndStoreJson(response_url, response_fileName);
+						}
+						break;
+					}
+					break;
+					
+				case DonutChart:
+					switch(actionName){
+					case GV:	
+						
+						DonutChart donut = new DonutChart(Automation.driver, webElement);						
+						WebVerification.verifyTabularData(testcaseID.toString(), MainController.controllerTransactionType.toString(),
+								donut.getDonutColumnNames(), donut.getDonutChartData());						
+						break;
+						
+					case LV:	
+					
+					DonutChart donutLegend = new DonutChart(Automation.driver, webElement);	
+					WebVerification.verifyTabularData(testcaseID.toString(), MainController.controllerTransactionType.toString(),
+							donutLegend.getDonutLegendColumnNames(), donutLegend.getDonutLegendData());						
+						break;	
+					}
+					break;
+					
+				case BarChart:
+					switch(actionName){
+					case GV:	
+						
+						String[] series= ctrlValue.split("!");
+						List<String> seriesList = Arrays.asList(series);
+						BarChart barChart = new BarChart(Automation.driver, webElement);						
+						WebVerification.verifyTabularData(testcaseID.toString(), MainController.controllerTransactionType.toString(),
+								barChart.getColumnNames(), barChart.getChartData(seriesList));					
+						break;
+						
+					case LV:	
+					
+						BarChart barchartLegend = new BarChart(Automation.driver, webElement);	
+						WebVerification.verifyTabularData(testcaseID.toString(), MainController.controllerTransactionType.toString(),
+							barchartLegend.getLegendColumnNames(), barchartLegend.getLegendData());						
+						break;	
+					}
+					break;
+				case BasicLineChart:
+                    switch(actionName){
+                    case GV:      
+                           
+                           BasicLineChart lineChart = new BasicLineChart(Automation.driver, webElement);                                    
+                           WebVerification.verifyTabularData(testcaseID.toString(), MainController.controllerTransactionType.toString(),
+                                         lineChart.getColumnNames(), lineChart.getChartData());                             
+                           break;
+                           
+                    case LV:      
+                    
+                           BasicLineChart linechartLegend = new BasicLineChart(Automation.driver, webElement);  
+                           WebVerification.verifyTabularData(testcaseID.toString(), MainController.controllerTransactionType.toString(),
+                                         linechartLegend.getLegendColumnNames(), linechartLegend.getLegendData());                                    
+                           break; 
+                    }
+                    break;
 				default:
 					System.out.println("U r in Default");
 					break;
@@ -1463,7 +1778,7 @@ public class WebHelper {
 			}
 		}
 		//TM-02/02/2015: Radio button found ("F") & AJAX control ("VA")
-		if((action.toString().equalsIgnoreCase("V")||action.toString().equalsIgnoreCase("F")||action.toString().equalsIgnoreCase("VA")) && !ctrlValue.equalsIgnoreCase(""))
+		if((action.toString().equalsIgnoreCase("V")||action.toString().equalsIgnoreCase("CP")||action.toString().equalsIgnoreCase("F")||action.toString().equalsIgnoreCase("VA")) && !ctrlValue.equalsIgnoreCase(""))
 		{
 			if(Results == true)
 			{
@@ -1714,4 +2029,99 @@ public class WebHelper {
 		return elementProperties;
 	}
 
+	public static void saveScreenShot(){
+		if (!(Automation.driver instanceof TakesScreenshot)) {
+
+ 			System.out.println("Not able to take screenshot: Current WebDriver does not support TakesScreenshot interface.");
+			return;
+		}
+
+		File scrFile=null;
+		String date=null;
+		String location=null;
+		String fileName=null;	
+		BufferedImage image=null;
+		
+		
+		
+		if(StringUtils.isBlank(TransactionMapping.report.frmDate))	            
+			 TransactionMapping.report.setFromDate(Automation.dtFormat.format(new Date()));	
+		
+		date = TransactionMapping.report.frmDate.replaceAll("[-/: ]","");	           
+		
+		try {
+				if(StringUtils.isNotBlank(ErrorMsg))
+					//KV:Save File Name as with Current Test Step 
+					fileName = TransactionMapping.report.strTestcaseId + "_" + TransactionMapping.report.strTrasactionType+"_" +ErrorMsg +"_"+date+".jpeg";
+				else		
+					fileName = TransactionMapping.report.strTestcaseId + "_" + TransactionMapping.report.strTrasactionType+ "_"+date+".jpeg";
+				
+			/*	scrFile = ((TakesScreenshot)Automation.driver).getScreenshotAs(OutputType.FILE);
+				FileUtils.copyFile(scrFile, new File(location));*/
+				Thread.sleep(2000);
+				image = new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));				
+				ImageIO.write(image, "png", new File(Automation.configHashMap.get("INPUT_DATA_FILEPATH").toString()
+						+ File.separator+ ".."+File.separator+"Results" + File.separator +"ScreenShots"+ File.separator + fileName));				
+			
+			location = Automation.configHashMap.get("INPUT_DATA_FILEPATH").toString()
+					+  File.separator+ ".."+File.separator+"Results" + File.separator +"ScreenShots"+ File.separator + fileName + ".jpeg";
+			TransactionMapping.report.strScreenshot = "file:\\\\"+location;
+		} 
+		catch (Exception e){			
+			
+			System.out.println("Taking screenshot failed for: " +TransactionMapping.report.strTestcaseId);
+			// e.printStackTrace();
+			return;
+		}
+	}
+	
+	/**
+	 * This function saves screenshot with message embossed in the screenshot
+	 * @param testCaseId
+	 * @param transactionType
+	 * @param Message
+	 * @param verficationResult
+	 * @return
+	 * @throws IOException
+	 */
+	public static String saveScreenShot(Reporter report,String ssColumnName) throws IOException
+	{
+		byte[] b;
+		TransactionMapping.report.strTestcaseId = report.strTestcaseId;
+		TransactionMapping.report.strTrasactionType = report.strTrasactionType;
+		ErrorMsg = ssColumnName;
+		saveScreenShot();		
+		ErrorMsg = "";
+		VerificationScreen = TransactionMapping.report.strScreenshot;
+		// Add Text to Image
+		String path = VerificationScreen.substring(7);
+		if (report.strStatus.equalsIgnoreCase("Pass"))
+			b = mergeImageAndText(path, ssColumnName, new Point(200, 200));
+		else
+			b = mergeImageAndText(path, report.strActualValue, new Point(200, 200));
+        FileOutputStream fos = new FileOutputStream(path);
+        fos.write(b);
+        fos.close();		
+		return VerificationScreen;
+	}
+	
+	/**
+	 * This function embosses the message on the screenshot
+	 * @param imageFilePath
+	 * @param text
+	 * @param textPosition
+	 * @return
+	 * @throws IOException
+	 */
+	 public static byte[] mergeImageAndText(String imageFilePath,
+	        String text, Point textPosition) throws IOException {
+	        BufferedImage im = ImageIO.read(new File(imageFilePath));
+	        Graphics2D g2 = im.createGraphics();
+	        g2.setColor(Color.RED);	
+	        g2.setBackground(Color.WHITE);
+	        g2.drawString(text, textPosition.x, textPosition.y);	        
+	        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	        ImageIO.write(im, "PNG", baos);
+	        return baos.toByteArray();
+	    }
 }

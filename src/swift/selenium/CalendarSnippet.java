@@ -97,10 +97,20 @@ public  class CalendarSnippet {
 		return false;
 	}
 
-	public static void killProcess(String serviceName) throws Exception
-	{
-		KILL =System.getenv("SystemRoot") +  KILL;
-		Runtime.getRuntime().exec(KILL + serviceName);
+	public static void killProcess(String serviceName) throws Exception{
+	
+		String osName = System.getProperty("os.name");
+		String finalCommand ="";
+		
+		if (osName.contains("Mac") || osName.contains("Linux")) {
+			finalCommand ="killall -9 ";
+		
+		}
+		else{
+			finalCommand=System.getenv("SystemRoot") +  KILL;
+		}	
+		 
+		Runtime.getRuntime().exec(finalCommand + serviceName);
 	}
 }
 
