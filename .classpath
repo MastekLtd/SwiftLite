@@ -93,5 +93,8 @@
 	<classpathentry kind="lib" path="libs/other/webbit-0.4.8-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libs/other/webspec.jar"/>
 	<classpathentry kind="lib" path="libs/other/winpack-3.7.1.jar"/>
+	<classpathentry kind="lib" path="libs/other/commons-validator-1.5.0.jar"/>
+	<classpathentry kind="lib" path="libs/other/java-client-3.4.1.jar"/>
+	<classpathentry kind="lib" path="libs/other/json-simple-1.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
