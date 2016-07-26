@@ -1,0 +1,6 @@
+{
+  "name": "Swiftlite",
+  "tagline": "Selenium Automation Framework",
+  "body": "SwiftLite\r\n=========\r\n\r\nSwift is a hybrid framework that derives benefits from the following automation framework methodologies.\r\n * Support has been added for Behaviour driven development( BDD ) using Cucucmber\r\n * It contains rich and robust library of generic functions for data input, verification and reporting. \r\n * Library functions can be called from anywhere within the framework.\r\n \r\n\r\n\r\nQuickstart\r\n===========\r\n\r\nSwiftLite executable jar can be [downloaded] (https://sourceforge.net/projects/swiftlite/) and can be executed with following updations in the files.\r\n\r\n\r\nKey Components\r\n==============\r\n\r\nPlease download [Swift-Selenium UserGuide.pdf] (https://github.com/MastekLtd/SwiftLite/blob/master/Swift%20Selenium%20UserGuide.pdf) and follow Section 4.3 Key Components for further setup details\r\n\r\nAlso, the same PDF can be used to work with complete code of Swift Lite Framework\r\n  \r\n   \r\nDownload SwiftLite distributable\r\n--------------------------------\r\n[Download SwiftLite] (https://sourceforge.net/projects/swiftlite/)\r\n\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
