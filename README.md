@@ -11,7 +11,7 @@ Swift is a hybrid framework that derives benefits from the following automation 
 Quickstart
 ===========
 
-SwiftLite executable jar can be [downloaded] (https://sourceforge.net/projects/swiftlite/files/1.2/) and can be executed with following updations in the files.
+SwiftLite executable jar can be [downloaded] (https://sourceforge.net/projects/swiftlite/) and can be executed with following updations in the files.
 
 
 Key Components
@@ -24,5 +24,5 @@ Also, the same PDF can be used to work with complete code of Swift Lite Framewor
    
 Download SwiftLite distributable
 --------------------------------
-[Download SwiftLite] (https://sourceforge.net/projects/swiftlite/files/1.2/)
+[Download SwiftLite] (https://sourceforge.net/projects/swiftlite/)
 
