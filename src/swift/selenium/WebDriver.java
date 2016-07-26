@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
 
 public class WebDriver {
 	
-	public static Reporter report=new Reporter();
+	private static Reporter report=new Reporter();
 	public static JFrame frame = new JFrame("SWIFT FRAMEWORK");
 	
 	public static void main(String args[]) throws IOException

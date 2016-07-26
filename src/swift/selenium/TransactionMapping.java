@@ -47,7 +47,7 @@ public class TransactionMapping {
 	public static Date toDate = null;
 	public static String transactionType;
 	public static JFrame frame = new JFrame("SWIFT FRAMEWORK");
-
+	
 	public static Reporter TransactionInputData(String transaction,
 			String testId, String description, String group) throws Exception {
 
@@ -64,14 +64,14 @@ public class TransactionMapping {
 			String transactionType = getCellData("TransactionType", workSheet,
 					rowIndex, inputHashTable);
 			String directoryPath = getCellData("DirPath", workSheet, rowIndex,
-					inputHashTable).toString();//
+					inputHashTable).toString();
 			String inputExcel = getCellData("InputSheet", workSheet, rowIndex,
 					inputHashTable).toString();
 			
 			 String TestFilePath = Automation.configHashMap.get(
 					"INPUT_DATA_FILEPATH").toString()
 					+ directoryPath.toString()
-					+ "\\"
+					+ File.separator
 					+ inputExcel.toString();
 		 
 			if (transactionType.toString().equalsIgnoreCase(
@@ -88,7 +88,21 @@ public class TransactionMapping {
 							transactionCode, "");
 					break;
 				}
-				operationType = "Input";
+
+				if (!transactionType.toString().startsWith("Verify")) {
+					operationType = "Input";
+				}
+
+				if (transactionType.toString().startsWith("Verify")
+						&& (!directoryPath.toString().isEmpty())
+						&& (!inputExcel.toString().isEmpty())) {
+					operationType = "InputandVerfiy";
+
+				} else if (transactionType.toString().startsWith("Verify")
+						&& (directoryPath.toString().isEmpty())
+						&& (inputExcel.toString().isEmpty())) {
+					operationType = "Verify";
+				}
 				if (transaction.toString().equalsIgnoreCase(
 						transactionType.toString())) {
 					if ((directoryPath == null || inputExcel == null)
@@ -100,7 +114,7 @@ public class TransactionMapping {
 							inputFilePath = Automation.configHashMap.get(
 									"INPUT_DATA_FILEPATH").toString()
 									+ directoryPath.toString()
-									+ "\\"
+									+ File.separator
 									+ inputExcel.toString();
 						}
 						System.out.println(inputFilePath);
@@ -125,7 +139,6 @@ public class TransactionMapping {
 		return null;
 
 	}
-	
 	@SuppressWarnings("null")
 	public static String getCellData(String reqValue, HSSFSheet reqSheet,
 			int rowIndex, HashMap<String, Object> inputHashTable)
@@ -283,14 +296,14 @@ public class TransactionMapping {
 				&& !operationType.isEmpty()) {
 			ExcelUtility.GetDataFromValues(filePath, testcaseID.toString(),
 					transactionTypeFetched.toString());
-			//WebVerification.performVerification(transactionType, testcaseID);
+			WebVerification.performVerification(transactionType, testcaseID);
 		} else if (!operationType.equalsIgnoreCase("Verify")
 				&& !operationType.isEmpty()) {
 			ExcelUtility.GetDataFromValues(filePath, testcaseID.toString(),
 					transactionTypeFetched.toString());
 		} else if (!operationType.equalsIgnoreCase("Input")
 				&& !operationType.isEmpty()) {
-			//WebVerification.performVerification(transactionType, testcaseID);
+			WebVerification.performVerification(transactionType, testcaseID);
 		}
 	}
 
@@ -336,7 +349,7 @@ public class TransactionMapping {
 		// TM:19/01/2015 - Changes made to save screenshots in jpeg format
 		// rather that png since they are heavier
 		String location = Automation.configHashMap.get("INPUT_DATA_FILEPATH").toString()
-				+ "\\..\\Results\\ScreenShots\\" + fileName + ".jpeg";
+				+ File.separator+ ".."+File.separator+"Results" + File.separator +"ScreenShots"+ File.separator + fileName + ".jpeg";
 		report.strScreenshot = "file:\\\\" + location;
 
 		try {

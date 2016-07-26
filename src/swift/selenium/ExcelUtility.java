@@ -15,7 +15,6 @@
  *	See the License for the specific language governing permissions and 
  *	limitations under the License.
  */
-
 package swift.selenium;
 
 import java.io.File;
@@ -26,11 +25,14 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.DataFormatter;
+
 
 public class ExcelUtility {
 	public static char myChar = 34;
@@ -127,11 +129,11 @@ public class ExcelUtility {
 		return workSheet;
 	}
 
-/**
- * This method is called when Report.csv is generated for the first time in Passing scenarios
- * @param report
- * @throws IOException
- */
+	/**
+	 * This method is called when Report.csv is generated for the first time in Passing scenarios
+	 * @param report
+	 * @throws IOException
+	 */
 	public static void writeReport(Reporter report) throws IOException {
 		try {
 			report.setReport(report);
@@ -179,6 +181,259 @@ public class ExcelUtility {
 		}
 	}
 	
+	
+	public static Reporter CompareExcel(HSSFSheet actualSheet,HSSFSheet expectedSheet,List<String> columns,List<String> columnsData,String testCaseID,String transactionType, int actualSheetRowCount) throws IOException
+	{
+		boolean isrowFound = false;
+		int expSheetRowCount =getRowCount(expectedSheet); //expectedSheet.getPhysicalNumberOfRows();
+		Reporter report =new Reporter();
+		report.setReport(report);
+		int passCount=0, failCount=0, colCount=0, finalRowCount=0;
+		
+		//TM-28/09/2015: if expected sheet row count is greater than actual sheet row count than comparison should be on basis of expected sheet row count else vice-versa
+		if (expSheetRowCount >= actualSheetRowCount)
+			finalRowCount = expSheetRowCount;
+		else
+			finalRowCount = actualSheetRowCount;
+		
+		for(int rowIndex=firstRow;rowIndex<firstRow+finalRowCount;rowIndex++)
+		{
+			passCount=0;
+			failCount =0;
+			int currentRow = ++WebVerification.currentRowIndex;
+			HSSFRow actualRow  = actualSheet.getRow(currentRow);
+			HSSFRow expectedRow  = expectedSheet.getRow(rowIndex);
+			
+			//TM-28/09/2015: if actual and expected sheet row count does not match then break after following the steps in this code block.
+			if(actualRow == null || expectedRow == null)
+			{
+				status.clear();
+				report.strStatus = "FAIL";
+				report.setStrStatus(report.strStatus);
+				rowStatus.add(report.strStatus);
+				failCount +=1;						
+				
+				//TM-28/09/2015: if expected sheet row count is greater than actual sheet row count else vice-versa
+				if(actualRow == null)
+					report.strActualValue = "Expected No. of rows are greater than Actual No. of rows.";				
+				else
+					report.strActualValue = "Actual No. of rows are greater than Expected No. of rows.";
+						
+				actualValue = new ArrayList<String>();
+				actualValue.add(report.strActualValue);
+				actualRows.add(actualValue);
+				PassCount.add(passCount);
+				FailCount.add(failCount);	
+				report.setReport(report);
+				break;
+			}
+			
+			
+			if(actualRow.getCell(0).toString().equals(expectedRow.getCell(0).toString())&& actualRow.getCell(1).toString().equals(expectedRow.getCell(1).toString()))
+			{
+				
+				isrowFound =true;
+				actualValue = new ArrayList<String>();
+				
+				//TM:6/08/15-This is unreachable code
+				/*if(actualRow == null || expectedRow == null)
+				{
+					break;
+				}*/
+				
+				colCount = expectedRow.getPhysicalNumberOfCells();
+				for(int columnIndex = 3; columnIndex<colCount; columnIndex++)
+				{
+					HSSFCell actualCell = actualRow.getCell(columnIndex);
+					DataFormatter fmt = new DataFormatter();				
+					HSSFCell expectedCell = expectedRow.getCell(columnIndex);
+					//TM: commented the code to find replacement of continue
+					/*if(actualCell == null || expectedCell == null)
+					{
+						continue;
+					}*/
+					//TM: Following 'if' is replacement of the above
+					if (actualCell != null || expectedCell != null){
+						String expectedValue= fmt.formatCellValue(expectedCell);
+						
+						if(!actualCell.toString().equalsIgnoreCase(expectedValue))
+						{
+							report.strStatus = "FAIL";
+							report.setStrStatus(report.strStatus);						
+							failCount +=1;						
+							report.strActualValue = "FAIL |" + expectedValue + "|" + actualCell.toString();
+						}
+						else
+						{
+							passCount +=1;
+							report.strStatus = "PASS";
+							report.setStrStatus(report.strStatus);
+							report.strActualValue = actualCell.toString();
+							//System.out.println(actualCell.toString());
+						}
+						status.add(report.strStatus);
+						actualValue.add(report.strActualValue);
+					}
+					
+				}
+				if(status.contains("FAIL"))
+				{				
+					report.strStatus="FAIL";
+				}
+				else
+				{
+					report.strStatus ="PASS";
+				}
+				status.clear();
+				rowStatus.add(report.strStatus);
+				PassCount.add(passCount);
+				FailCount.add(failCount);	
+				actualRows.add(actualValue);
+				report.setReport(report);
+			}
+			else if(isrowFound == false)
+			{			
+				continue;
+				/*MainController.pauseFun("No Rows Found For Comparision");
+				break;*/
+			}
+		}
+		if(rowStatus.contains("FAIL"))
+		{
+			report.strStatus = "FAIL";
+		}
+		WriteToDetailResults(testCaseID,transactionType,columns, actualRows, passCount, failCount, expSheetRowCount, colCount,report,rowStatus);
+		PassCount.clear();
+		FailCount.clear();
+		return report;
+	}
+		
+	public static Reporter CompareExcelRowWise(HSSFSheet actualSheet,HSSFSheet expectedSheet,List<String> columns,List<String> columnsData,String testCaseID,String transactionType) throws IOException
+	{
+		boolean isrowFound = false;
+		
+		int expSheetRowCount = getRowCount(expectedSheet);//expectedSheet.getPhysicalNumberOfRows(); 
+		int effectivefirstRow = firstRow;
+		int actualSheetRowCount = ExcelUtility.getRowCount(actualSheet);
+		Reporter report =new Reporter();
+		report.setReport(report);
+		int passCount=0, failCount=0, colCount=0, finalRowCount=0;
+		WebVerification.currentRowIndex=0;
+		
+		//TM-28/09/2015: if expected sheet row count not matching actual sheet row count than Come out
+		if (expSheetRowCount != actualSheetRowCount){
+			TransactionMapping.report.strStatus = "FAIL";
+			TransactionMapping.report.strMessage = "Expected No. of rows does not match Actual No. of rows, Please check Expected and Actual sheets";
+								
+		}
+			
+		else{			
+		
+			for(int rowIndex=effectivefirstRow;rowIndex<effectivefirstRow+expSheetRowCount;rowIndex++)
+			{
+				passCount=0;
+				failCount =0;
+				int currentRow = ++WebVerification.currentRowIndex;
+				HSSFRow actualRow  = actualSheet.getRow(currentRow);
+				HSSFRow expectedRow  = expectedSheet.getRow(rowIndex);
+				
+				//TM-28/09/2015: if actual and expected sheet row count does not match then break after following the steps in this code block.
+				if(actualRow == null || expectedRow == null)
+				{
+					status.clear();
+					report.strStatus = "FAIL";
+					report.setStrStatus(report.strStatus);
+					rowStatus.add(report.strStatus);
+					failCount +=1;						
+					
+					//TM-28/09/2015: if expected sheet row count is greater than actual sheet row count else vice-versa
+					if(actualRow == null)
+						report.strActualValue = "Expected No. of rows are greater than Actual No. of rows.";				
+					else
+						report.strActualValue = "Actual No. of rows are greater than Expected No. of rows.";
+							
+					actualValue = new ArrayList<String>();
+					actualValue.add(report.strActualValue);
+					actualRows.add(actualValue);
+					PassCount.add(passCount);
+					FailCount.add(failCount);	
+					report.setReport(report);
+					break;
+				}
+				
+				
+				if(actualRow.getCell(0).toString().equals(expectedRow.getCell(0).toString())&& actualRow.getCell(1).toString().equals(expectedRow.getCell(1).toString()))
+				{
+					
+					
+					isrowFound =true;
+					actualValue = new ArrayList<String>();								
+					
+					colCount = expectedRow.getPhysicalNumberOfCells();
+					for(int columnIndex = 3; columnIndex<colCount; columnIndex++)
+					{
+						HSSFCell actualCell = actualRow.getCell(columnIndex);
+						DataFormatter fmt = new DataFormatter();				
+						HSSFCell expectedCell = expectedRow.getCell(columnIndex);
+						
+						//TM: Following 'if' is replacement of the above
+						if (actualCell != null || expectedCell != null){
+							String expectedValue= fmt.formatCellValue(expectedCell);
+							
+							if(!actualCell.toString().equalsIgnoreCase(expectedValue))
+							{
+								report.strStatus = "FAIL";
+								report.setStrStatus(report.strStatus);						
+								failCount +=1;						
+								report.strActualValue = "FAIL |" + expectedValue + "|" + actualCell.toString();
+							}
+							else
+							{
+								passCount +=1;
+								report.strStatus = "PASS";
+								report.setStrStatus(report.strStatus);
+								report.strActualValue = actualCell.toString();
+								System.out.println(actualCell.toString());
+							}
+							status.add(report.strStatus);
+							actualValue.add(report.strActualValue);
+						}
+						
+					}
+					if(status.contains("FAIL"))
+					{				
+						report.strStatus="FAIL";
+						TransactionMapping.report.strStatus = "FAIL";
+						TransactionMapping.report.strMessage = "Please refer to Detailed Results for more info..";
+					}
+					else
+					{
+						report.strStatus ="PASS";
+					}
+					status.clear();
+					rowStatus.add(report.strStatus);
+					PassCount.add(passCount);
+					FailCount.add(failCount);	
+					actualRows.add(actualValue);
+					report.setReport(report);
+				}
+				else if(isrowFound == false)
+				{			
+					continue;					
+				}
+			}
+			if(rowStatus.contains("FAIL"))
+			{
+				report.strStatus = "FAIL";
+			}
+			WriteToDetailResults(testCaseID,transactionType,columns, actualRows, passCount, failCount, expSheetRowCount, colCount,report,rowStatus);
+		}
+		
+		PassCount.clear();
+		FailCount.clear();
+		return report;
+	}
+
 		
 		
 		/**
