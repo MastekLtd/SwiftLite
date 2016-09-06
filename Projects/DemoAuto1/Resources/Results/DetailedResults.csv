@@ -1,0 +1,4 @@
+Iteration,TestCaseID,TransactionType,CurrentDate,RowType,Status,PassCount,FailCount
+"Cycle1","SC_TC1","VerifyRanorexVIP","2016/09/06 17:24:47","Header","FAIL","","","FirstName","LastName","Gender","Category"
+"Cycle1","SC_TC1","VerifyRanorexVIP","2016/09/06 17:24:47","Data","FAIL","3","1","Deepak","FAIL |Rupani|Rathod","Male","Other"
+"Cycle1","SC_TC1","VerifyRanorexVIP","2016/09/06 17:24:47","Data","PASS","4","0","Abhay","Sharma","Male","Movie"

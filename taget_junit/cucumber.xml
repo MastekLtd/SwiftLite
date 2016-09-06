@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?><testsuite failures="0" name="cucumber.runtime.formatter.JUnitFormatter" skipped="0" tests="1" time="7.64123">
+<testcase classname="Smoke Test Feature" name="Add Patients &lt;SC_TC1&gt;" time="7.64123">
+<system-out><![CDATA[Given User Story for Adding Patients, Login to Health page..................passed
+When do add two patients <AddPatient>.......................................passed
+And verify the patients were added to table.................................passed
+Then Validate Web Table <VerifyRanorexVIP>..................................passed
+]]></system-out>
+</testcase>
+</testsuite>

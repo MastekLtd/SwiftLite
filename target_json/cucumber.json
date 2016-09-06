@@ -1,0 +1,111 @@
+[
+  {
+    "line": 2,
+    "elements": [
+      {
+        "before": [
+          {
+            "result": {
+              "duration": 356142,
+              "status": "passed"
+            },
+            "match": {
+              "location": "StepDefinitions.before(Scenario)"
+            }
+          }
+        ],
+        "line": 5,
+        "name": "Add Patients \u003cSC_TC1\u003e",
+        "description": "",
+        "id": "smoke-test-feature;add-patients-\u003csc-tc1\u003e",
+        "type": "scenario",
+        "keyword": "Scenario",
+        "steps": [
+          {
+            "result": {
+              "duration": 106038912,
+              "status": "passed"
+            },
+            "line": 7,
+            "name": "User Story for Adding Patients, Login to Health page",
+            "match": {
+              "arguments": [
+                {
+                  "val": "User Story for Adding Patients, Login to Health page",
+                  "offset": 0
+                }
+              ],
+              "location": "StepDefinitions.user_on_webpage(String)"
+            },
+            "keyword": "Given "
+          },
+          {
+            "result": {
+              "duration": 7201313004,
+              "status": "passed"
+            },
+            "line": 8,
+            "name": "do add two patients \u003cAddPatient\u003e",
+            "match": {
+              "arguments": [
+                {
+                  "val": "do add two patients \u003cAddPatient\u003e",
+                  "offset": 0
+                }
+              ],
+              "location": "StepDefinitions.user_on_webpage(String)"
+            },
+            "keyword": "When "
+          },
+          {
+            "result": {
+              "duration": 35922,
+              "status": "passed"
+            },
+            "line": 9,
+            "name": "verify the patients were added to table...",
+            "match": {
+              "arguments": [
+                {
+                  "val": "verify the patients were added to table...",
+                  "offset": 0
+                }
+              ],
+              "location": "StepDefinitions.user_on_webpage(String)"
+            },
+            "keyword": "And "
+          },
+          {
+            "result": {
+              "duration": 333485746,
+              "status": "passed"
+            },
+            "line": 10,
+            "name": "Validate Web Table \u003cVerifyRanorexVIP\u003e",
+            "match": {
+              "arguments": [
+                {
+                  "val": "Validate Web Table \u003cVerifyRanorexVIP\u003e",
+                  "offset": 0
+                }
+              ],
+              "location": "StepDefinitions.user_on_webpage(String)"
+            },
+            "keyword": "Then "
+          }
+        ],
+        "tags": [
+          {
+            "line": 4,
+            "name": "@SmokeTest"
+          }
+        ]
+      }
+    ],
+    "name": "Smoke Test Feature",
+    "description": "",
+    "id": "smoke-test-feature",
+    "keyword": "Feature",
+    "uri": "Projects/DemoAuto1/Feature/test.feature"
+  }
+]

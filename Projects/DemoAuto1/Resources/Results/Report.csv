@@ -1,0 +1,4 @@
+GroupName,Iteration,TestCaseID,TransactionType,TestCaseDescription,StartDate,EndDate,Status,Description,Screenshot
+" @SmokeTest","Cycle1","SC_TC1","AddPatient","Add Patients ","2016/09/06 17:24:39","2016/09/06 17:24:45","PASS","",""
+" @SmokeTest","Cycle1","SC_TC1","AddPatient","Add Patients ","2016/09/06 17:24:45","2016/09/06 17:24:47","PASS","",""
+" @SmokeTest","Cycle1","SC_TC1","VerifyRanorexVIP","Add Patients ","2016/09/06 17:24:47","2016/09/06 17:24:47","FAIL","See Detailed Results",""
