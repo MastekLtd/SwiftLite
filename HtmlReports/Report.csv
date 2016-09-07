@@ -1,0 +1,7 @@
+GroupName,Iteration,TestCaseID,TransactionType,TestCaseDesription,StartDate,EndDate,Status,Description,Screenshot
+EBPortal,Cycle1,EBP_TC01,EBPLogin,Check for Correct Login,06-02-2015 10:00,06-02-2015 10:00,PASS,,
+,Cycle1,EBP_TC01,VerifyCompletedGroupSetup,Check for Correct Login,06-02-2015 10:00,06-02-2015 10:00,PASS,See Detailed Results,
+,Cycle1,EBP_TC01,VerifyPendingGroupSetup,Check for Correct Login,06-02-2015 10:00,06-02-2015 10:00,FAIL,See Detailed Results,
+EBPortal,Cycle1,EBP_SearchClaim_TC01,SearchClaims,Search Claims & Verify,06-02-2015 10:00,06-02-2015 10:01,PASS,,
+,Cycle1,EBP_SearchClaim_TC01,VerifyClaimResults,Search Claims & Verify,06-02-2015 10:01,06-02-2015 10:01,PASS,See Detailed Results,
+EBPortal,Cycle1,EBP_AddNewGroup_TC01,AddNewGroup,Add New Group,06-02-2015 10:01,06-02-2015 10:02,FAIL,Company created successfully.,ScreenShots\EBP_AddNewGroup_TC01_20150206.jpeg
